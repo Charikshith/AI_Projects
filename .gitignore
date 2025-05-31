@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.aider
 
 # C extensions
 *.so
