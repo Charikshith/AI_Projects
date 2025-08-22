@@ -6,8 +6,8 @@ from langfuse.openai import OpenAI
 from langfuse import Langfuse
 
 langfuse = Langfuse(
-  secret_key="sk-lf-1796eac9-4a9b-4419-a011-80bee147aa23",
-  public_key="pk-lf-b4155098-9dc6-42b8-8044-fe5741f1265a",
+  secret_key="sk-lf-1796eac9-4a9b-4419-a011-",
+  public_key="pk-lf-b4155098-9dc6-42b8-8044-",
   host="https://us.cloud.langfuse.com"
 )
 
