@@ -16,7 +16,7 @@ class Person(BaseModel):
     age: int
     occupation: str
 
-client = OpenAI(base_url="https://generativelanguage.googleapis.com/v1beta/openai/", api_key="AIzaSyB1TdgFNhuPHUqk3-Gzmrn3L5i_l9VjPGw")
+client = OpenAI(base_url="https://generativelanguage.googleapis.com/v1beta/openai/", api_key="AIzaSyB1TdgFN")
 
 
 
