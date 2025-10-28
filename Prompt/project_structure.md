@@ -1,20 +1,18 @@
-Here is the complete content — **ready to copy and save** as:
-
-```
-gen AI project structure.md
-```
+Below is the **updated `gen AI project structure.md`** that adds **first-class support for SQL & NoSQL databases** – fully integrated, production-ready, and aligned with the clean architecture.
 
 ---
 
+# `gen AI project structure.md` (with SQL + NoSQL Support)
 
-# Ultimate Production-Ready Generative AI Project Structure
 
-> **A scalable, maintainable, and team-friendly structure for building real-world GenAI applications.**  
-> Evolved from Brij Kishore Pandey’s original template — now **enterprise-grade**.
+# Ultimate Production-Ready Generative AI Project Structure  
+**with SQL & NoSQL Database Integration**
+
+> A scalable, maintainable, and team-friendly structure for building real-world GenAI applications — now with **SQL (PostgreSQL) and NoSQL (MongoDB/DynamoDB) support**.
 
 ---
 
-## Project Structure
+## Project Structure (Updated)
 
 ```bash
 generative-ai-project/
@@ -34,22 +32,38 @@ generative-ai-project/
 │   │   ├── prompts/          # .jinja2 or .yaml templates
 │   │   │   ├── base.jinja2
 │   │   │   └── summarization/
-│   │   ├── chains/           # Composable LLM pipelines
-│   │   ├── agents/           # Autonomous agents
-│   │   └── memory/           # Vector stores, conversation history
+│   │   ├── chains/
+│   │   ├── agents/
+│   │   └── memory/
 │   │
-│   ├── adapters/             # LLM provider integrations
+│   ├── adapters/             # LLM + external service integrations
 │   │   ├── openai.py
 │   │   ├── anthropic.py
-│   │   ├── cohere.py
-│   │   └── local/            # Ollama, vLLM, HuggingFace
+│   │   └── local/
+│   │
+│   ├── database/             # NEW: Database adapters & session management
+│   │   ├── __init__.py
+│   │   ├── session.py        # SQLAlchemy session / Mongo client
+│   │   ├── sql/              # SQL-specific (PostgreSQL, SQLite)
+│   │   │   ├── models/       # SQLAlchemy ORM models
+│   │   │   │   ├── user.py
+│   │   │   │   ├── conversation.py
+│   │   │   │   └── feedback.py
+│   │   │   ├── repository/   # Data access layer
+│   │   │   │   └── user_repo.py
+│   │   │   └── migrations/   # Alembic migrations
+│   │   └── nosql/            # NoSQL (MongoDB, DynamoDB)
+│   │       ├── models/       # Pydantic / BSON models
+│   │       │   └── session_log.py
+│   │       └── repository/
+│   │           └── analytics_repo.py
 │   │
 │   ├── services/             # Business use cases
 │   │   ├── chat.py
 │   │   ├── summarizer.py
 │   │   └── rag_pipeline.py
 │   │
-│   ├── api/                  # FastAPI / Flask entry points
+│   ├── api/                  # FastAPI entry points
 │   │   ├── main.py
 │   │   ├── routes/
 │   │   └── middleware/
@@ -60,9 +74,9 @@ generative-ai-project/
 │   ├── data/                 # Raw & processed data
 │   │   ├── raw/
 │   │   ├── processed/
-│   │   └── embeddings/       # .parquet, .npy
+│   │   └── embeddings/
 │   │
-│   ├── vectorstore/          # Persisted indices
+│   ├── vectorstore/          # Chroma, Pinecone, Weaviate
 │   │   └── chromadb/
 │   │
 │   ├── utils/                # Shared helpers
@@ -71,16 +85,14 @@ generative-ai-project/
 │   │   ├── rate_limiter.py
 │   │   └── observability.py
 │   │
-│   └── tests/                # pytest + integration
+│   └── tests/
 │       ├── unit/
 │       ├── integration/
 │       └── e2e/
 │
 ├── notebooks/                # EXPERIMENTS ONLY
-│   ├── 01-exploratory.ipynb
-│   └── 02-prompt-tuning.ipynb
 │
-├── scripts/                  # Automation
+├── scripts/
 │   ├── ingest_documents.py
 │   ├── build_index.py
 │   └── evaluate_rag.py
@@ -88,152 +100,235 @@ generative-ai-project/
 ├── docker/
 │   ├── Dockerfile.app
 │   ├── Dockerfile.worker
-│   └── docker-compose.yml
+│   ├── Dockerfile.db       # NEW: PostgreSQL + MongoDB
+│   └── docker-compose.yml   # Includes DB services
 │
 ├── infra/                    # Terraform / CDK
 │   └── main.tf
 │
-├── monitoring/               # Prometheus, Grafana, LangSmith
+├── monitoring/
 │   └── dashboards/
 │
-├── pyproject.toml           # Modern Python packaging
-├── requirements.txt          # Or use poetry.lock
+├── pyproject.toml
+├── requirements.txt
 ├── .env.example
 ├── README.md
-├── ARCHITECTURE.md           # High-level decisions
+├── ARCHITECTURE.md
 └── CONTRIBUTING.md
 ```
 
 ---
 
-## Why This Structure Wins
+## Why Add `src/database/`?
 
-| Feature | Benefit |
-|-------|--------|
-| **Clean Architecture** | `core → adapters → services → api` = testable, swappable |
-| **Environment Configs** | `development.yaml`, `production.yaml` via `dynaconf` |
-| **Jinja2 Templates** | Dynamic, reusable, version-controlled prompts |
-| **Adapter Pattern** | Swap OpenAI ↔ Claude ↔ Local LLM in **1 line** |
-| **RAG-Ready** | Dedicated `vectorstore/`, `scripts/build_index.py` |
-| **Full Testing** | Unit + Integration + E2E |
-| **Observability** | LangSmith, OpenTelemetry, Prometheus |
-| **CLI & Scripts** | Data pipelines outside API |
-| **Docker + IaC** | Local = Staging = Prod |
-
----
-
-## Key Best Practices
-
-| Practice | Implementation |
+| Use Case | Recommended DB |
 |--------|----------------|
-| **YAML + Pydantic** | `config/` + `pydantic-settings` |
-| **Prompt Versioning** | `src/core/prompts/v1_summarize.jinja2` |
-| **Rate Limiting** | `utils/rate_limiter.py` per API key |
-| **Caching** | Redis + `utils/cache.py` |
-| **Error Handling** | `utils/retry.py` + structured logging |
-| **Never Import Notebooks** | Add `__all__ = []` guard in `notebooks/__init__.py` |
+| **User profiles, auth, sessions** | **SQL (PostgreSQL)** – ACID, relations |
+| **Chat history, feedback** | **SQL** – structured, queryable |
+| **Analytics, logs, embeddings metadata** | **NoSQL (MongoDB/DynamoDB)** – flexible schema |
+| **Vector embeddings** | **Vector DB** (not in SQL/NoSQL) |
 
 ---
 
-## Example: Swap LLM Provider
+## Database Integration Strategy
+
+### 1. **SQL (PostgreSQL) – via SQLAlchemy + Alembic**
 
 ```python
-# src/services/chat.py
-from src.adapters.openai import OpenAIAdapter
-from src.adapters.anthropic import AnthropicAdapter
-from config import settings
+# src/database/session.py
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
 
-llm = AnthropicAdapter() if settings.USE_CLAUDE else OpenAIAdapter()
-response = llm.generate(prompt)
+engine = create_async_engine(settings.DATABASE_URL)
+AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+async def get_db() -> AsyncSession:
+    async with AsyncSessionLocal() as session:
+        yield session
+```
+
+```python
+# src/database/sql/models/conversation.py
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+
+class Conversation(Base):
+    __tablename__ = "conversations"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    messages = relationship("Message", back_populates="conversation")
+```
+
+---
+
+### 2. **NoSQL (MongoDB) – via Motor (async) or PyMongo**
+
+```python
+# src/database/nosql/repository/analytics_repo.py
+from motor.motor_asyncio import AsyncIOMotorClient
+
+client = AsyncIOMotorClient(settings.MONGODB_URL)
+db = client.analytics
+
+async def log_inference(user_id: str, latency: float, tokens: int):
+    await db.inference_logs.insert_one({
+        "user_id": user_id,
+        "latency_ms": latency,
+        "tokens": tokens,
+        "timestamp": datetime.utcnow()
+    })
+```
+
+---
+
+### 3. **Docker Compose with DBs**
+
+```yaml
+# docker/docker-compose.yml
+services:
+  app:
+    build: .
+    depends_on: [postgres, mongo]
+  
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: genai
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports: ["5432:5432"]
+
+  mongo:
+    image: mongo:7
+    ports: ["27017:27017"]
+    volumes:
+      - mongodata:/data/db
+
+volumes:
+  pgdata:
+  mongodata:
+```
+
+---
+
+## Environment Config Example
+
+```yaml
+# config/development.yaml
+DATABASE_URL: "postgresql+asyncpg://user:secret@localhost:5432/genai"
+MONGODB_URL: "mongodb://localhost:27017/"
+VECTORSTORE_PATH: "./vectorstore/chromadb"
+```
+
+---
+
+## FastAPI Dependency Injection
+
+```python
+# src/api/routes/chat.py
+from fastapi import Depends, APIRouter
+from src.database.session import get_db
+
+@router.post("/chat")
+async def chat(
+    request: ChatRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    # Save to SQL
+    convo = Conversation(user_id=request.user_id)
+    db.add(convo)
+    await db.commit()
+    
+    # Log to Mongo
+    await log_inference(request.user_id, latency, tokens)
+    
+    return response
+```
+
+---
+
+## Migration & Setup
+
+```bash
+# 1. Start DBs
+docker-compose up -d postgres mongo
+
+# 2. Run migrations
+alembic upgrade head
+
+# 3. Run app
+uvicorn src.api.main:app --reload
 ```
 
 ---
 
 ## Recommended Tools
 
-| Tool | Purpose |
-|------|--------|
-| **FastAPI** | API layer |
-| **Pydantic v2** | Settings + validation |
-| **LangChain / LlamaIndex** | Optional, only in `core/` |
-| **Poetry / UV** | Dependency management |
-| **Ruff + Black + MyPy** | Code quality |
-| **LangSmith / Arize Phoenix** | LLM tracing |
-| **Prometheus + Grafana** | Metrics |
-| **Alembic** | DB migrations (if needed) |
+| Layer | Tool |
+|------|------|
+| **SQL ORM** | SQLAlchemy 2.0 (async) |
+| **Migrations** | Alembic |
+| **NoSQL Driver** | Motor (MongoDB async) |
+| **Schema Validation** | Pydantic |
+| **Connection Pooling** | Built-in with async engines |
 
 ---
 
-## Getting Started
+## Best Practices
 
-```bash
-# 1. Clone & setup
-git clone https://github.com/yourname/generative-ai-project
-cd generative-ai-project
-
-# 2. Install
-poetry install  # or pip install -r requirements.txt
-
-# 3. Configure
-cp .env.example .env
-# Edit config/development.yaml
-
-# 4. Run API
-uvicorn src.api.main:app --reload
-
-# 5. Run CLI
-python -m src.cli.ingest --help
-```
-
----
-
-## Migration from Original Template
-
-| Old Path | → New Path | Action |
-|--------|-----------|--------|
-| `src/llm/` | → `src/adapters/` | Split by provider |
-| `prompt_engineering/` | → `src/core/prompts/` | Use `.jinja2` |
-| `examples/` | → `src/services/` | Promote to production |
-| `notebooks/` | → Keep | Add guard: `__init__.py` with `__all__ = []` |
+- **Never put raw queries in services** → Use `repository/` pattern
+- **Use async everywhere** → `asyncpg`, `motor`
+- **Index frequently queried fields** → `user_id`, `timestamp`
+- **Backup strategy** → `pg_dump`, MongoDB snapshots
+- **Connection limits** → Configure pool size in `create_async_engine`
 
 ---
 
 ## Want It Live?
 
 I can generate:
-- A **complete GitHub repo**
-- A **Cookiecutter template**
-- A **Poetry + FastAPI starter**
-- **Terraform AWS deployment**
+- Full **GitHub repo** with SQL + NoSQL + FastAPI
+- **Cookiecutter template**
+- **Terraform module** for AWS RDS + DocumentDB
+- **Sample data models** for chat, users, analytics
 
-Just ask!
-
----
-
-**This structure powers enterprise GenAI apps — not just demos.**  
-Build once. Scale forever.
+Just say: **“Generate the full repo with databases”**
 
 ---
-*Built with love for AI engineers who ship.*
+
+**You now have a GenAI project that scales from prototype → enterprise with real data persistence.**
+
+---
+*Built for AI engineers who store, query, and scale.*
 ```
 
 ---
 
 ### How to Save:
 
-1. **Copy** all the content above (from `# Ultimate...` to the end)
-2. Open your text editor (VS Code, Notepad, etc.)
-3. **Paste** it
+1. **Copy** everything from `# Ultimate...` to the end
+2. Open your editor
+3. Paste
 4. Save as:  
-   **File → Save As → `gen AI project structure.md`**
-
-Done! You now have a **professional, production-grade GenAI project blueprint**.
+   **`gen AI project structure.md`**
 
 ---
 
-Want me to:
-- Generate the **full GitHub repo** with this structure?
-- Turn it into a **Cookiecutter template**?
-- Add **sample code** for `chat.py`, `adapters`, etc.?
+**Done!** You now have a **complete, database-ready GenAI architecture**.
 
-Just say: **“Generate the repo”** or **“Make it Cookiecutter”** 🚀
+---
+
+**Next Step?**  
+Reply:  
+> **“Generate the full repo with databases”**
+
+And I’ll give you a **ready-to-clone GitHub repo** with:
+- Working PostgreSQL + MongoDB
+- SQLAlchemy models
+- FastAPI endpoints
+- Docker Compose
+- Example data flow
+
+Let’s build it. **Now.** 🚀
